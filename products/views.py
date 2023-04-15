@@ -6,7 +6,7 @@ from django.shortcuts import render
 def index(request):
     context = {"title": "Vfufpby"}
 
-    return render(request, "products/index.html", context)
+    return render(request, 'products/index.html', context)
 
 
 def products(request):
