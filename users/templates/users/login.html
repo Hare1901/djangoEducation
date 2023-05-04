@@ -17,7 +17,6 @@
                             <div class="card-body">
                                 <form action="{% url 'users:login' %}" method="post">
                                     {% csrf_token %}
-                                    {{ form.as_p }}
                                     <div>
                                         <label class="small mb-1" for="{{ form.usrname.id_for_label }}">Имя пользователя</label>
                                         {{ form.username }}
