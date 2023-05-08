@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import auth, messages
 from users.forms import UserLoginForm, UserRegistrationForm, UseProfileForm
-
+from products.models import Basket
 
 def login(request):
     if request.method == "POST":
@@ -44,7 +44,10 @@ def profile(request):
             print(form.errors)
     else:
         form = UseProfileForm(instance=request.user)
-    context = {'title': 'Store - Профиль', 'form': form}
+    context = {'title': 'Store - Профиль',
+               'form': form,
+               'baskets': Basket.objects.all()
+               }
     return render(request, 'users/profile.html', context)
 
 def logout(request):
