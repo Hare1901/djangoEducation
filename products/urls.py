@@ -6,6 +6,7 @@ from products.views import products, basket_add, basket_remove
 app_name = "products"
 urlpatterns = [
     path("", products, name="index"),
+    path("category/<int:category_id>", products, name="category"),
     path("baskets/add/<int:product_id>/", basket_add, name="basket_add"),                                     #<int:product_id> - поскольку в контроллере передаем product_id
     path("baskets/remove/<int:basket_id>/", basket_remove, name="basket_remove"),                                     #<int:product_id> - поскольку в контроллере передаем product_id
 
