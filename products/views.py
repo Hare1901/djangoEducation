@@ -12,25 +12,27 @@ def index(request):
     return render(request, 'products/index.html', context)
 
 
-def products(request, category_id=None, page=1):
+def products(request, category_id=None, page_number=1):
     if category_id:
         products = Product.objects.filter(category_id=category_id)
     else:
         products = Product.objects.all(),
 
     per_page = 3
-    paginator =Paginator(products,per_page)
-    products_paginator = paginator.page(page)
+    paginator = Paginator(products, per_page)
+    products_paginator = paginator.page(page_number)
 
     context = {
         'title': "Store - Каталог",
-        'products':  products_paginator,
+        'products': products_paginator,
         'categories': ProductCategory.objects.all(),
-             }
+    }
     return render(request, "products/products.html", context)
+
 
 @login_required
 def basket_add(request, product_id):
+
     product = Product.objects.get(id=product_id)
     baskets = Basket.objects.filter(user=request.user, products=product)
 
@@ -42,6 +44,7 @@ def basket_add(request, product_id):
         basket.save()
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
 
 @login_required
 def basket_remove(request, basket_id):
