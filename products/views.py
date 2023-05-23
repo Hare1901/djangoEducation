@@ -2,14 +2,18 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from products.models import ProductCategory, Product, Basket
 from django.core.paginator import Paginator
-
+from  django.views.generic.base import TemplateView
 
 # Create your views here.
 
-def index(request):
-    context = {"title": "Магазин-сама"}
 
-    return render(request, 'products/index.html', context)
+class IndexView(TemplateView):
+    template_name = 'products/index.html'                                                                           #Передается страница для рендеринга(отображение)
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data()                                                          #Выполняется код, возвращается словарь, который мы можем дополнить своим контекстом
+        context['title']: "Магазин"
+        return context
 
 
 def products(request, category_id=None, page_number=1):
