@@ -4,7 +4,6 @@ from products.models import ProductCategory, Product, Basket
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 
-# Create your views here.
 
 
 class IndexView(TemplateView):
@@ -29,12 +28,13 @@ class ProductsListView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
 
-        context = super(ProductsListView,self).get_context_data()
+        context = super(ProductsListView, self).get_context_data()
         context['title'] = "Store - Каталог"
         context['categories'] = ProductCategory.objects.all()
 
         return context
 #
+
 
 @login_required
 def basket_add(request, product_id):
