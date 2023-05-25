@@ -1,89 +1,62 @@
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.contrib import auth
+from django.views.generic.edit import CreateView, UpdateView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.views import LoginView
+
+from users.models import User
 from users.forms import UserLoginForm, UserRegistrationForm, UseProfileForm
 from products.models import Basket
-from django.views.generic.edit import CreateView, UpdateView
-from users.models import User
-
-def login(request):
-    if request.method == "POST":
-        form = UserLoginForm(data=request.POST)
-        if form.is_valid():
-            username = request.POST["username"]
-            password = request.POST["password"]
-            user = auth.authenticate(username=username, password=password)
-            if user:
-                auth.login(request, user)
-                return HttpResponseRedirect(reverse("index"))
-    else:
-        form = UserLoginForm()
-    context = {"form": form}
-    return render(request, "users/login.html", context)
+from common.views import TitleMixin
 
 
-class UserRegistrationView(CreateView):
+class UserLoginView(TitleMixin, LoginView):
+
+    template_name = "users/login.html"
+    form_class = UserLoginForm
+    title = 'Авторизация'
+
+
+
+# любой mixin всегда перед классом наследования
+class UserRegistrationView(TitleMixin, SuccessMessageMixin, CreateView):
+
     model = User
-    #указываем ссылку на созданый нами класс
+    # указываем ссылку на созданый нами класс
     form_class = UserRegistrationForm
     template_name = 'users/registration.html'
-    #сохраняем куда перенаправит пользователя с помощью нового метода
+    # сохраняем куда перенаправит пользователя с помощью нового метода
     success_url = reverse_lazy('users:login')
+    # вывод сообщения о удачном регистрации
+    success_message = 'Аккаунт зарегистрирован!'
+    #переменная наследуемая от моего TitleMixim
+    title = 'решистрация'
 
 
-    def get_context_data(self, **kwargs):
-        context = super(UserRegistrationView, self).get_context_data()
-        context['title'] = 'Регистрация'
-        return context
+class UserProfileView(TitleMixin, UpdateView):
 
-
-# def registration(request):
-#     if request.method == 'POST':
-#         form = UserRegistrationForm(data=request.POST)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, "Аккаунт зарегистрирован!")
-#             return HttpResponseRedirect(reverse("users:login"))
-#     else:
-#         form = UserRegistrationForm()
-#     form = UserRegistrationForm()
-#     context = {'form': form}
-#     return render(request, "users/registration.html", context)
-
-
-class UserProfileView(UpdateView):
     model = User
     form_class = UseProfileForm
     template_name = "users/profile.html"
+    title = 'Личный кабинет'
 
+    def get_success_url(self):
+
+        return reverse_lazy('users:profile', args=(self.object.id,))
 
     def get_context_data(self, **kwargs):
+
         context = super(UserProfileView, self).get_context_data()
-        context['title'] = 'Личный кабинет'
-        # корзину в контекст
         context['baskets'] = Basket.objects.filter(user=self.object)
+
         return context
 
 
-# @login_required
-# def profile(request):
-#     if request.method == 'POST':
-#         form = UseProfileForm(instance=request.user, data=request.POST, files=request.FILES)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect(reverse('users:profile'))
-#         else:
-#             print(form.errors)
-#     else:
-#         form = UseProfileForm(instance=request.user)
-#
-#
-#     context = {'title': 'Store - Профиль',
-#                'form': form,
-#                'baskets': Basket.objects.filter(user=request.user)
-#                }
-#     return render(request, 'users/profile.html', context)
 
 def logout(request):
+
     auth.logout(request)
+
     return HttpResponseRedirect(reverse('index'))
+
