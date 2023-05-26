@@ -133,3 +133,8 @@ LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
 #адрес перенаправления при выходе с аккаунта
 LOGOUT_REDIRECT_URL = '/'
+
+
+# Настройка почты
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

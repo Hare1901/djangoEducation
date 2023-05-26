@@ -1,6 +1,11 @@
+import uuid
+# timedelta - тупо отчет времени
+from datetime import timedelta
+
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
-from users.models import User
+from django.utils.timezone import now
+from users.models import User, EmailVerification
 
 
 class UserLoginForm(AuthenticationForm):
@@ -60,9 +65,22 @@ class UserRegistrationForm(UserCreationForm):
     ))
 
     class Meta:
+
         model = User
         fields = ('firstname', "lastname", 'username', 'email', 'password1', 'password2')
 
+    #метод срабатывающий при создании
+    def save(self, commit=True):
+
+        user = super(UserRegistrationForm, self).save(commit=True)
+        # время регистрации + 2 дня
+        expiration = now() + timedelta(days=2)
+        # uuid.uuid4 - создание уникального кода в формате '9de760c4-da0c-498c-b75d-b228ddd65f38'
+        record = EmailVerification.objects.create(code=uuid.uuid4(), user=user, expirations=expiration)
+        # после создания record используем функцию модели
+        record.send_verification_email()
+
+        return user
 
 class UseProfileForm(UserChangeForm):
     firstname = forms.CharField(widget=forms.TextInput(attrs={
