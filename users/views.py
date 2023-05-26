@@ -54,14 +54,6 @@ class UserProfileView(TitleMixin, UpdateView):
         return context
 
 
-
-def logout(request):
-
-    auth.logout(request)
-
-    return HttpResponseRedirect(reverse('index'))
-
-
 class EmailVerificationsView(TitleMixin, TemplateView):
 
     title = 'Подтверждение почты'
