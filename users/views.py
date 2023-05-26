@@ -4,8 +4,9 @@ from django.contrib import auth
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.views import LoginView
+from django.views.generic.base import TemplateView
 
-from users.models import User
+from users.models import User, EmailVerification
 from users.forms import UserLoginForm, UserRegistrationForm, UseProfileForm
 from products.models import Basket
 from common.views import TitleMixin
@@ -59,4 +60,23 @@ def logout(request):
     auth.logout(request)
 
     return HttpResponseRedirect(reverse('index'))
+
+
+class EmailVerificationsView(TitleMixin, TemplateView):
+
+    title = 'Подтверждение почты'
+    template_name = 'users/email_verification.html'
+
+    def get(self, request, *args,  **kwargs):
+
+        code = kwargs['code']
+        user = User.objects.get(email=kwargs['email'])
+        email_verification = EmailVerification.objects.filter(user=user, code=code)
+        if email_verification.exists() and email_verification.first().is_expiered():
+            user.is_verifield_email = True
+            user.save()
+
+            return super(EmailVerificationsView, self).get(request, *args,  **kwargs)
+        else:
+            return HttpResponseRedirect(reverse('index'))
 
