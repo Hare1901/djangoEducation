@@ -137,5 +137,10 @@ LOGOUT_REDIRECT_URL = '/'
 
 
 # Настройка почты
+EMAIL_HOST = "smtp.yandex.ru"
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "sadchicovIlia@yandex.ru"
+EMAIL_HOST_PASSWORD = '125689347Hare'
+EMAIL_USE_SSL = True
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
