@@ -1,7 +1,7 @@
 from products.models import Basket
 
 
-def baslets(request):
+def baskets(request):
 
     user = request.user
 
